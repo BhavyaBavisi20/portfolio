@@ -12,7 +12,11 @@ export const PROJECTS = [
     description: "Built a production-grade GenAI assistant using LangChain and Vector Databases. Engineered a retrieval pipeline that reduces hallucination by grounding responses in medical documents.",
     impact: "40% faster document search and response using RAG pipelines",
     tags: ["GenAI", "RAG", "LangChain", "Pinecone"],
-    links: { demo: "#", code: "#", caseStudy: "#" }
+    links: {
+      demo: "https://github.com/BhavyaBavisi20/DocTalk-AI",
+      code: "https://github.com/BhavyaBavisi20/DocTalk-AI",
+      caseStudy: "#"
+    }
   },
   {
     id: 2,
@@ -37,12 +41,30 @@ export const PROJECTS = [
   {
     id: 4,
     title: "Portfolio Website",
-    role: "Frontend Engineering",
-    image: "/project_portfolio.png",
-    description: "Designed and built a high-performance, immersive portfolio. Implemented complex framer motion animations, 3D tilting cards, and responsive glassmorphism layouts.",
-    impact: "100/100 Lighthouse Performance Score.",
-    tags: ["React", "Tailwind", "Framer Motion"],
-    links: { demo: "#", code: "#", caseStudy: "#" }
+    role: "Full-Stack Portfolio Engineering",
+    image: "/project_portfolio_fullstack.svg",
+    description: "Built an immersive portfolio with a decoupled React frontend and a backend API layer for projects, blogs, achievements, certificates, and contact workflows. Combined motion-heavy UI, responsive layouts, and structured data delivery into a single production-style system.",
+    impact: "Evolved the portfolio from a static showcase into a full-stack app with dynamic content pipelines.",
+    tags: ["React", "Tailwind", "Framer Motion", "Node.js", "REST API", "MongoDB"],
+    links: {
+      demo: "https://github.com/BhavyaBavisi20/portfolio",
+      code: "https://github.com/BhavyaBavisi20/portfolio",
+      caseStudy: "#"
+    }
+  },
+  {
+    id: 5,
+    title: "AI-Assisted Tetris",
+    role: "Game AI & Frontend Logic",
+    image: "/project_tetris_ai.svg",
+    description: "Recreated the classic retro Tetris experience with an explainable AI assistant that analyzes the board, suggests optimal placements, and can play the game step-by-step.",
+    impact: "Built a transparent heuristic-driven AI system paired with a pixel-perfect retro UI.",
+    tags: ["Tetris", "Explainable AI", "Heuristics", "Game Logic", "Retro UI"],
+    links: {
+      demo: "https://github.com/BhavyaBavisi20/ai-assisted-tetris-retro-revival",
+      code: "https://github.com/BhavyaBavisi20/ai-assisted-tetris-retro-revival",
+      caseStudy: "#"
+    }
   }
 ];
 
@@ -57,16 +79,20 @@ export const SKILLS_DATA = {
   ],
   "Development": [
     { name: "Python", icon: Code, details: "FastAPI, Flask, Pandas" },
-    { name: "JavaScript", icon: Globe, details: "ES6+, Node.js" },
+    { name: "JavaScript", icon: Globe, details: "ES6+, async flows, app logic" },
+    { name: "Node.js", icon: Server, details: "Backend runtime, APIs, tooling" },
+    { name: "Express", icon: Server, details: "Routing, middleware, controllers" },
+    { name: "Backend Concepts", icon: Layout, details: "CRUD, MVC, auth flow basics" },
     { name: "React", icon: Atom, details: "Hooks, Redux, Next.js" },
     { name: "Tailwind", icon: Wind, details: "Responsive, Shadcn" },
     { name: "Framer Motion", icon: Layout, details: "Animations, Gestures" },
-    { name: "REST APIs", icon: Server, details: "Design, Integration" },
   ],
   "Tools": [
     { name: "Docker", icon: Container, details: "Containerization" },
     { name: "Git/GitHub", icon: GitBranch, details: "CI/CD, Version Control" },
     { name: "MongoDB", icon: Database, details: "NoSQL, Aggregation" },
+    { name: "Redis", icon: Database, details: "Caching, pub/sub basics" },
+    { name: "WebSockets", icon: Activity, details: "Real-time communication" },
     { name: "Power BI", icon: Activity, details: "Data Visualization" },
     { name: "n8n", icon: Zap, details: "Workflow Automation" },
   ]
@@ -157,22 +183,86 @@ export const BLOGS = [
     excerpt: "Why AI is a brilliant co-developer, but not your deployment engineer. A story of loops, context windows, and 5-minute promises.",
     date: "Nov 27, 2025",
     readTime: "4 min read",
-    content: "" 
+    content: `I recently decided to give my portfolio website a modern makeover.
+
+But instead of opening VS Code, I thought: why not let ChatGPT handle it?
+
+I shared an example link, a few design ideas, and a detailed prompt. Within minutes, it confidently handed me a ready-to-download ZIP file with HTML, CSS, and JS.
+
+So far, so good.
+
+Then came the real test.
+
+I asked for a few small edits: name updates, color tweaks, and smoother animation.
+
+ChatGPT replied: "Absolutely. I'll have the updated ZIP ready in 5 minutes."
+
+Five minutes later, it was: "Almost done. Just 5 more minutes."
+
+And then: GPT limit exhausted.
+
+The next day I tried again. Same promise. Same loop.
+
+After digging a bit deeper, here's what likely happened:
+
+Context overload: the model tried to hold all the previous code while rewriting the new version and ran out of context space.
+
+Tool timeout: the code generation may have worked, but the ZIP packaging step likely failed.
+
+Reassurance bias: instead of saying it could not finish, the model defaulted to a friendly "just 5 more minutes."
+
+In short, the AI did not forget. It ran out of bandwidth.
+
+The takeaway for me was simple:
+
+AI is an incredible co-developer for writing, debugging, and explaining code.
+
+But when it comes to building and packaging full projects, your local development environment still wins.
+
+Sometimes the best workflow is simple:
+
+AI for thinking.
+Your machine for building.` 
   },
   {
     id: 2,
-    title: "The Future of Multimodal Agents",
-    excerpt: "How text-to-image and image-to-text models are converging to create truly intelligent assistants.",
-    date: "Oct 12, 2025",
-    readTime: "5 min read",
-    content: "..."
-  },
-  {
-    id: 3,
-    title: "Optimizing CNNs for Edge Devices",
-    excerpt: "Techniques for pruning and quantization to run heavy computer vision models on mobile phones.",
-    date: "Sep 28, 2025",
-    readTime: "8 min read",
-    content: "..."
+    title: "From Chemistry to Chatbots: How Entropy Solves Real-World Problems",
+    excerpt: "A simple idea from chemistry and information theory can help chatbots avoid bad guesses and ask better questions.",
+    date: "Mar 15, 2026",
+    readTime: "4 min read",
+    content: `While building a chatbot recently, I ran into a common problem.
+
+Users often send ambiguous queries like: "I need help with my order."
+
+But that can mean very different things. It could be a request to track an order, cancel it, ask for a refund, or report a delivery issue. If the bot guesses too early, it risks taking the conversation in the wrong direction.
+
+Instead of treating this as just another intent-classification issue, I remembered a concept I first saw in chemistry and later again in decision trees: entropy.
+
+H(S) = - sum p(x) log2 p(x)
+
+Entropy is a measure of uncertainty. The higher the entropy, the less confident the system should be about making a direct decision.
+
+That led to a simple rule:
+
+Low entropy: the bot is confident, so it can respond directly.
+
+High entropy: the bot is uncertain, so it should ask a clarifying question first.
+
+For example, imagine the model predicts:
+
+Track Order: 0.35
+Cancel Order: 0.30
+Refund: 0.20
+Delivery Issue: 0.15
+
+Those probabilities are too close to justify a confident response. Instead of guessing, the better move is to ask: "Do you want to track, cancel, or request a refund for your order?"
+
+That one small decision improves both accuracy and user experience. The bot becomes more transparent, less error-prone, and much more useful in real conversations.
+
+The biggest takeaway for me is that many real engineering problems are solved using concepts we learned years ago.
+
+Entropy once felt like just another formula on paper. Today, it helps build AI systems that make better decisions.
+
+Sometimes the real edge is not learning a brand-new tool. It is understanding the fundamentals deeply enough to reuse them in the right context.`
   }
 ];

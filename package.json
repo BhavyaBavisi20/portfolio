@@ -1,6 +1,11 @@
 {
   "name": "portfolio-monorepo",
   "private": true,
+  "scripts": {
+    "dev:web": "npm run dev -w web",
+    "dev:api": "npm run dev -w api",
+    "seed:api": "npm run seed -w api"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"

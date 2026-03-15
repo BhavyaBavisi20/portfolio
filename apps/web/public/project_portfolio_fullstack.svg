@@ -1,0 +1,93 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="72" y1="54" x2="564" y2="590" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08111F"/>
+      <stop offset="0.45" stop-color="#060912"/>
+      <stop offset="1" stop-color="#020407"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#0F172A" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#020617" stop-opacity="0.96"/>
+    </linearGradient>
+    <linearGradient id="frontend" x1="144" y1="148" x2="322" y2="356" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#22C55E"/>
+    </linearGradient>
+    <linearGradient id="backend" x1="342" y1="214" x2="512" y2="394" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#F472B6"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="26" height="26" patternUnits="userSpaceOnUse">
+      <path d="M26 0H0V26" stroke="#E2E8F0" stroke-opacity="0.06"/>
+    </pattern>
+  </defs>
+
+  <rect width="640" height="640" rx="44" fill="url(#bg)"/>
+  <rect x="24" y="24" width="592" height="592" rx="32" stroke="white" stroke-opacity="0.08"/>
+  <rect x="40" y="40" width="560" height="560" rx="28" fill="url(#grid)"/>
+
+  <circle cx="504" cy="130" r="92" fill="#8B5CF6" fill-opacity="0.12"/>
+  <circle cx="176" cy="126" r="86" fill="#22C55E" fill-opacity="0.10"/>
+  <circle cx="472" cy="492" r="112" fill="#38BDF8" fill-opacity="0.10"/>
+
+  <rect x="96" y="92" width="448" height="456" rx="30" fill="url(#glass)" stroke="#F8FAFC" stroke-opacity="0.10"/>
+
+  <text x="128" y="136" fill="#F8FAFC" font-family="monospace" font-size="22" letter-spacing="3">BHAVYA.AI</text>
+  <text x="128" y="166" fill="#94A3B8" font-family="monospace" font-size="14" letter-spacing="2">FULL-STACK PORTFOLIO SYSTEM</text>
+
+  <g>
+    <rect x="128" y="198" width="186" height="156" rx="22" fill="#091423" stroke="#38BDF8" stroke-opacity="0.26"/>
+    <text x="150" y="230" fill="#7DD3FC" font-family="monospace" font-size="16" letter-spacing="2">FRONTEND</text>
+    <rect x="150" y="248" width="142" height="84" rx="14" fill="#020617" stroke="url(#frontend)" stroke-opacity="0.8"/>
+    <rect x="164" y="262" width="114" height="10" rx="5" fill="#38BDF8" fill-opacity="0.85"/>
+    <rect x="164" y="280" width="86" height="8" rx="4" fill="#E2E8F0" fill-opacity="0.32"/>
+    <rect x="164" y="296" width="100" height="8" rx="4" fill="#E2E8F0" fill-opacity="0.22"/>
+    <rect x="164" y="314" width="70" height="8" rx="4" fill="#22C55E" fill-opacity="0.7"/>
+    <circle cx="270" cy="314" r="10" fill="#38BDF8" fill-opacity="0.75"/>
+  </g>
+
+  <g>
+    <rect x="338" y="198" width="174" height="196" rx="22" fill="#12091B" stroke="#C084FC" stroke-opacity="0.26"/>
+    <text x="360" y="230" fill="#D8B4FE" font-family="monospace" font-size="16" letter-spacing="2">BACKEND</text>
+    <rect x="362" y="250" width="126" height="26" rx="13" fill="#1E293B"/>
+    <text x="382" y="268" fill="#F8FAFC" font-family="monospace" font-size="12">/api/projects</text>
+    <rect x="362" y="286" width="126" height="26" rx="13" fill="#1E293B"/>
+    <text x="388" y="304" fill="#F8FAFC" font-family="monospace" font-size="12">/api/blogs</text>
+    <rect x="362" y="322" width="126" height="26" rx="13" fill="#1E293B"/>
+    <text x="382" y="340" fill="#F8FAFC" font-family="monospace" font-size="12">/api/contact</text>
+    <g filter="url(#glow)">
+      <circle cx="426" cy="374" r="14" fill="#A78BFA"/>
+      <circle cx="392" cy="374" r="8" fill="#F472B6"/>
+      <circle cx="460" cy="374" r="8" fill="#38BDF8"/>
+      <path d="M392 374H460" stroke="url(#backend)" stroke-width="2.5"/>
+      <path d="M426 360V388" stroke="url(#backend)" stroke-width="2.5"/>
+    </g>
+  </g>
+
+  <g filter="url(#glow)">
+    <path d="M314 276C340 276 346 276 362 276" stroke="#67E8F9" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 10"/>
+    <path d="M314 320C334 320 346 320 362 320" stroke="#A78BFA" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 10"/>
+  </g>
+
+  <g>
+    <rect x="128" y="408" width="384" height="102" rx="20" fill="#070D18" stroke="white" stroke-opacity="0.08"/>
+    <text x="150" y="438" fill="#94A3B8" font-family="monospace" font-size="14" letter-spacing="2">STACK</text>
+    <rect x="150" y="454" width="74" height="26" rx="13" fill="#0F172A" stroke="#38BDF8" stroke-opacity="0.24"/>
+    <text x="171" y="471" fill="#F8FAFC" font-family="monospace" font-size="12">React</text>
+    <rect x="236" y="454" width="96" height="26" rx="13" fill="#0F172A" stroke="#22C55E" stroke-opacity="0.24"/>
+    <text x="255" y="471" fill="#F8FAFC" font-family="monospace" font-size="12">Tailwind</text>
+    <rect x="344" y="454" width="78" height="26" rx="13" fill="#0F172A" stroke="#A78BFA" stroke-opacity="0.24"/>
+    <text x="365" y="471" fill="#F8FAFC" font-family="monospace" font-size="12">Node</text>
+    <rect x="434" y="454" width="56" height="26" rx="13" fill="#0F172A" stroke="#F472B6" stroke-opacity="0.24"/>
+    <text x="449" y="471" fill="#F8FAFC" font-family="monospace" font-size="12">API</text>
+  </g>
+
+  <text x="128" y="580" fill="#F8FAFC" font-family="monospace" font-size="20" letter-spacing="3">IMMERSIVE UI + DATA LAYER</text>
+</svg>

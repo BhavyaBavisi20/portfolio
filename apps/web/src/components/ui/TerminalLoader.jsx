@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const TerminalLoader = ({ onComplete }) => {
   const lines = [
-    "> Deploying LLM Orchestrator...",
-    "> Attaching RAG & VectorDB...",
-    "> Initializing Agent Runtime...",
-    "> Optimizing embeddings pipeline...",
-    "> Neural Systems Online.",
-    "ACCESS GRANTED",
-    "bhavya.ai — where intelligence meets engineering."
+    '> Signal detected...',
+    '> Bringing intelligence into focus...',
+    '> Revealing projects, systems, and experiments...',
+    '> Lighting up the neural grid...',
+    '> Entering bhavya.ai...',
+    'ACCESS GRANTED',
+    'where intelligence meets engineering.',
   ];
 
   const [index, setIndex] = useState(0);
@@ -35,8 +35,8 @@ const TerminalLoader = ({ onComplete }) => {
             key={i}
             className={
               i === lines.length - 1
-                ? "text-purple-400 font-bold"
-                : "text-gray-300"
+                ? 'text-purple-400 font-bold'
+                : 'text-gray-300'
             }
           >
             {line}

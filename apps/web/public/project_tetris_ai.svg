@@ -1,0 +1,119 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="48" x2="576" y2="592" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0C1224"/>
+      <stop offset="0.55" stop-color="#090B14"/>
+      <stop offset="1" stop-color="#030408"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="112" y1="96" x2="112" y2="544" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#06080F" stop-opacity="0.96"/>
+    </linearGradient>
+    <linearGradient id="scan" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#7CFFB2" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#53C7FF" stop-opacity="0.02"/>
+    </linearGradient>
+    <filter id="glowCyan" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowGreen" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" stroke="#A5B4FC" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <rect width="640" height="640" rx="44" fill="url(#bg)"/>
+  <rect x="24" y="24" width="592" height="592" rx="32" stroke="white" stroke-opacity="0.08"/>
+  <rect x="40" y="40" width="560" height="560" rx="28" fill="url(#grid)"/>
+
+  <circle cx="526" cy="120" r="82" fill="#8B5CF6" fill-opacity="0.12"/>
+  <circle cx="500" cy="492" r="108" fill="#06B6D4" fill-opacity="0.12"/>
+  <circle cx="168" cy="156" r="96" fill="#22C55E" fill-opacity="0.08"/>
+
+  <g opacity="0.96">
+    <rect x="104" y="88" width="232" height="464" rx="24" fill="url(#panel)" stroke="#F8FAFC" stroke-opacity="0.10"/>
+    <rect x="124" y="112" width="192" height="416" rx="12" fill="#0A1020"/>
+    <rect x="124" y="112" width="192" height="416" rx="12" fill="url(#scan)"/>
+    <rect x="124" y="112" width="192" height="416" rx="12" stroke="#67E8F9" stroke-opacity="0.16"/>
+
+    <path d="M143 112V528M162 112V528M181 112V528M200 112V528M219 112V528M238 112V528M257 112V528M276 112V528M295 112V528" stroke="#94A3B8" stroke-opacity="0.10"/>
+    <path d="M124 131H316M124 150H316M124 169H316M124 188H316M124 207H316M124 226H316M124 245H316M124 264H316M124 283H316M124 302H316M124 321H316M124 340H316M124 359H316M124 378H316M124 397H316M124 416H316M124 435H316M124 454H316M124 473H316M124 492H316M124 511H316" stroke="#94A3B8" stroke-opacity="0.10"/>
+
+    <g filter="url(#glowCyan)">
+      <rect x="162" y="416" width="19" height="19" rx="4" fill="#22D3EE"/>
+      <rect x="181" y="416" width="19" height="19" rx="4" fill="#22D3EE"/>
+      <rect x="200" y="416" width="19" height="19" rx="4" fill="#22D3EE"/>
+      <rect x="219" y="416" width="19" height="19" rx="4" fill="#22D3EE"/>
+
+      <rect x="200" y="378" width="19" height="19" rx="4" fill="#A855F7"/>
+      <rect x="181" y="397" width="19" height="19" rx="4" fill="#A855F7"/>
+      <rect x="200" y="397" width="19" height="19" rx="4" fill="#A855F7"/>
+      <rect x="219" y="397" width="19" height="19" rx="4" fill="#A855F7"/>
+
+      <rect x="143" y="454" width="19" height="19" rx="4" fill="#F59E0B"/>
+      <rect x="143" y="473" width="19" height="19" rx="4" fill="#F59E0B"/>
+      <rect x="162" y="473" width="19" height="19" rx="4" fill="#F59E0B"/>
+      <rect x="181" y="473" width="19" height="19" rx="4" fill="#F59E0B"/>
+
+      <rect x="238" y="340" width="19" height="19" rx="4" fill="#34D399"/>
+      <rect x="257" y="340" width="19" height="19" rx="4" fill="#34D399"/>
+      <rect x="219" y="359" width="19" height="19" rx="4" fill="#34D399"/>
+      <rect x="238" y="359" width="19" height="19" rx="4" fill="#34D399"/>
+
+      <rect x="162" y="264" width="19" height="19" rx="4" fill="#F472B6"/>
+      <rect x="181" y="264" width="19" height="19" rx="4" fill="#F472B6"/>
+      <rect x="181" y="283" width="19" height="19" rx="4" fill="#F472B6"/>
+      <rect x="200" y="283" width="19" height="19" rx="4" fill="#F472B6"/>
+    </g>
+
+    <g opacity="0.38">
+      <rect x="238" y="188" width="19" height="19" rx="4" fill="#E2E8F0"/>
+      <rect x="257" y="188" width="19" height="19" rx="4" fill="#E2E8F0"/>
+      <rect x="276" y="188" width="19" height="19" rx="4" fill="#E2E8F0"/>
+      <rect x="295" y="188" width="19" height="19" rx="4" fill="#E2E8F0"/>
+    </g>
+  </g>
+
+  <g>
+    <rect x="362" y="102" width="186" height="164" rx="22" fill="#08111D" fill-opacity="0.92" stroke="#67E8F9" stroke-opacity="0.20"/>
+    <text x="386" y="136" fill="#67E8F9" font-family="monospace" font-size="18" letter-spacing="2">AI ASSIST</text>
+    <text x="386" y="170" fill="#F8FAFC" font-family="monospace" font-size="16">NEXT MOVE</text>
+    <text x="386" y="196" fill="#86EFAC" font-family="monospace" font-size="24">ROTATE T</text>
+    <text x="386" y="224" fill="#94A3B8" font-family="monospace" font-size="13">confidence  96.4%</text>
+    <text x="386" y="246" fill="#94A3B8" font-family="monospace" font-size="13">holes       -2</text>
+    <line x1="386" y1="208" x2="520" y2="208" stroke="#67E8F9" stroke-opacity="0.20"/>
+    <g filter="url(#glowGreen)">
+      <path d="M492 168L520 140" stroke="#86EFAC" stroke-width="3" stroke-linecap="round"/>
+      <path d="M512 140H520V148" stroke="#86EFAC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <g>
+    <rect x="364" y="290" width="192" height="194" rx="24" fill="#0A0F1A" fill-opacity="0.94" stroke="#A78BFA" stroke-opacity="0.16"/>
+    <text x="388" y="326" fill="#E9D5FF" font-family="monospace" font-size="17" letter-spacing="2">HEURISTICS</text>
+    <rect x="388" y="350" width="144" height="12" rx="6" fill="white" fill-opacity="0.08"/>
+    <rect x="388" y="350" width="122" height="12" rx="6" fill="#22C55E"/>
+    <text x="388" y="382" fill="#F8FAFC" font-family="monospace" font-size="13">aggregate height</text>
+    <rect x="388" y="398" width="144" height="12" rx="6" fill="white" fill-opacity="0.08"/>
+    <rect x="388" y="398" width="76" height="12" rx="6" fill="#38BDF8"/>
+    <text x="388" y="430" fill="#F8FAFC" font-family="monospace" font-size="13">bumpiness</text>
+    <rect x="388" y="446" width="144" height="12" rx="6" fill="white" fill-opacity="0.08"/>
+    <rect x="388" y="446" width="36" height="12" rx="6" fill="#F472B6"/>
+    <text x="388" y="478" fill="#F8FAFC" font-family="monospace" font-size="13">holes</text>
+  </g>
+
+  <g opacity="0.9">
+    <text x="104" y="592" fill="#F8FAFC" font-family="monospace" font-size="20" letter-spacing="3">RETRO REVIVAL</text>
+    <text x="386" y="592" fill="#94A3B8" font-family="monospace" font-size="16">EXPLAINABLE GAME AI</text>
+  </g>
+</svg>

@@ -43,7 +43,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="fixed top-8 left-8 z-50 mix-blend-difference">
+      <div className="fixed top-4 left-4 md:top-8 md:left-8 z-50 mix-blend-difference">
         <div className="text-xl font-bold tracking-tight text-white cursor-pointer">
           bhavya<span className="text-purple-500">.ai</span>
         </div>
@@ -85,7 +85,7 @@ const Navbar = () => {
       </div>
       
       {/* Mobile Hamburger */}
-      <div className="fixed top-8 right-8 z-50 md:hidden">
+      <div className="fixed top-4 right-4 z-50 md:hidden">
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-3 bg-black/50 backdrop-blur-md border border-white/10 rounded-full text-white cursor-pointer">
           {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -99,7 +99,7 @@ const Navbar = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }} 
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-x-4 top-24 z-40 md:hidden"
+            className="fixed inset-x-4 top-20 z-40 md:hidden"
           >
             <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-1">
               {NAV_ITEMS.map((item) => (

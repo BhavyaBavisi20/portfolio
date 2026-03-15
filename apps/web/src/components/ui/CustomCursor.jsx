@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const CustomCursor = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
@@ -10,8 +11,20 @@ const CustomCursor = () => {
   const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
+  const trailingXSpring = useSpring(cursorX, { damping: 40, stiffness: 400 });
+  const trailingYSpring = useSpring(cursorY, { damping: 40, stiffness: 400 });
 
   useEffect(() => {
+    const touchCapable =
+      window.matchMedia('(pointer: coarse)').matches ||
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0;
+    setIsTouchDevice(touchCapable);
+
+    if (touchCapable) {
+      return undefined;
+    }
+
     const moveCursor = (e) => {
       cursorX.set(e.clientX - 16); // offset by half the width (32/2)
       cursorY.set(e.clientY - 16);
@@ -44,6 +57,10 @@ const CustomCursor = () => {
     };
   }, [cursorX, cursorY]);
 
+  if (isTouchDevice) {
+    return null;
+  }
+
   return (
     <>
       <motion.div
@@ -62,8 +79,8 @@ const CustomCursor = () => {
       <motion.div
         className="fixed top-0 left-0 w-2 h-2 rounded-full pointer-events-none z-[9999] bg-purple-500 hidden md:block"
         style={{
-          x: useSpring(cursorX, { damping: 40, stiffness: 400 }),
-          y: useSpring(cursorY, { damping: 40, stiffness: 400 }),
+          x: trailingXSpring,
+          y: trailingYSpring,
           translateX: "12px",
           translateY: "12px"
         }}

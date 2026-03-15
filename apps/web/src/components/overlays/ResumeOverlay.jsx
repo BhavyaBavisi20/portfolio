@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X, FileText } from 'lucide-react';
-import { RESUME_PATH } from '../../data';
+import { RESUME_PATH } from '../../config/profile';
 
 const ResumeOverlay = ({ onClose }) => (
   <motion.div 
@@ -33,6 +33,15 @@ const ResumeOverlay = ({ onClose }) => (
       </h3>
 
       <div className="space-y-12 border-l-2 border-white/10 pl-8 ml-2">
+        <div className="relative">
+          <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-cyan-400 border-4 border-[#0a0a0a]" />
+          <span className="text-cyan-300 font-mono text-sm mb-1 block">2026 - Present</span>
+          <h3 className="text-xl font-bold text-white">AI Intern at DevX AI Labs</h3>
+          <p className="text-gray-400 mt-1">
+            Working around AI-native customer experience, automation systems, and modern product engineering workflows.
+          </p>
+        </div>
+
         <div className="relative">
           <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-purple-500 border-4 border-[#0a0a0a]" />
           <span className="text-purple-400 font-mono text-sm mb-1 block">2026 (Expected)</span>

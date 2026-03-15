@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 
 // Styles
 import FontStyles from './components/styles/FontStyles';
@@ -26,12 +27,41 @@ import CertificatesSection from './components/sections/CertificatesSection';
 import BlogsList from './components/sections/BlogsList';
 import ContactSection from './components/sections/ContactSection';
 import Footer from './components/sections/Footer';
+import { API_ROUTES } from './config/api';
 
 const App = () => {
   const [overlay, setOverlay] = useState(null);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [achievements, setAchievements] = useState([]);
+  const [certificates, setCertificates] = useState([]);
 
+  useEffect(() => {
+    const loadPortfolioData = async () => {
+      try {
+        const [projectsRes, skillsRes, blogsRes, achievementsRes, certificatesRes] = await Promise.all([
+          axios.get(API_ROUTES.projects),
+          axios.get(API_ROUTES.skills),
+          axios.get(API_ROUTES.blogs),
+          axios.get(API_ROUTES.achievements),
+          axios.get(API_ROUTES.certificates)
+        ]);
+
+        setProjects(projectsRes.data || []);
+        setSkills(skillsRes.data || []);
+        setBlogs(blogsRes.data || []);
+        setAchievements(achievementsRes.data || []);
+        setCertificates(certificatesRes.data || []);
+      } catch (error) {
+        console.error('Failed to load portfolio data:', error);
+      }
+    };
+
+    loadPortfolioData();
+  }, []);
   const handleOpenBlog = (blog) => {
     setSelectedBlog(blog);
     setOverlay('blog');
@@ -68,10 +98,10 @@ const App = () => {
               onOpenAbout={() => setOverlay('about')} 
               onOpenResume={() => setOverlay('resume')} 
             />
-            <ProjectsList />
-            <SkillsGrid />
-            <CertificatesSection />
-            <BlogsList onOpenBlog={handleOpenBlog} />
+            <ProjectsList projects={projects} />
+            <SkillsGrid categories={skills} />
+            <CertificatesSection achievements={achievements} certificates={certificates} />
+            <BlogsList blogs={blogs} onOpenBlog={handleOpenBlog} />
             <ContactSection />
           </main>
 
