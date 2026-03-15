@@ -1,17 +1,19 @@
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath, pathToFileURL } from "url";
 import connectDB from "./src/config/db.js";
 import Project from "./src/models/Project.js";
 import Blog from "./src/models/Blog.js";
 import SkillCategory from "./src/models/SkillCategory.js";
 import Achievement from "./src/models/Achievement.js";
 import Certificate from "./src/models/Certificate.js";
+import {
+  PROJECTS,
+  BLOGS,
+  SKILLS_DATA,
+  ACHIEVEMENTS,
+  CERTIFICATES
+} from "./src/data/portfolioData.js";
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const normalizeIcon = (iconValue) => {
   if (!iconValue) {
@@ -25,11 +27,6 @@ const normalizeIcon = (iconValue) => {
 
 const run = async () => {
   await connectDB();
-
-  const dataFile = path.resolve(__dirname, "../web/src/data/index.js");
-  const dataModule = await import(pathToFileURL(dataFile).href);
-
-  const { PROJECTS, BLOGS, SKILLS_DATA, ACHIEVEMENTS, CERTIFICATES } = dataModule;
 
   await Promise.all([
     Project.deleteMany({}),

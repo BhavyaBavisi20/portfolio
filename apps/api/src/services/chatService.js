@@ -9,7 +9,7 @@ import {
   CERTIFICATES,
   PROJECTS,
   SKILLS_DATA
-} from "../../../web/src/data/index.js";
+} from "../data/portfolioData.js";
 
 const DEFAULT_CHAT_MODEL =
   process.env.HUGGINGFACE_CHAT_MODEL || "katanemo/Arch-Router-1.5B";
