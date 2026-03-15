@@ -4,6 +4,14 @@ import { Trophy, Award, ArrowUpRight } from 'lucide-react';
 import StickySection from './StickySection';
 import { ICON_MAP } from '../../config/icons';
 
+const getCertificateThumb = (certificate) => {
+  if (certificate?.issuer === 'Google Developers') {
+    return '/google_developers.svg';
+  }
+
+  return certificate?.thumb || '';
+};
+
 const CertificatesSection = ({ achievements = [], certificates = [] }) => (
   <StickySection title="Credentials & Impact" label="[ 04 - Certs ]" id="certificates" className="py-24">
     <div className="space-y-16">
@@ -52,8 +60,17 @@ const CertificatesSection = ({ achievements = [], certificates = [] }) => (
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden">
-                  {cert.thumb ? (
-                    <img src={cert.thumb} alt={cert.issuer} className="w-full h-full object-contain" />
+                  {getCertificateThumb(cert) ? (
+                    <img
+                      src={getCertificateThumb(cert)}
+                      alt={cert.issuer}
+                      className="w-full h-full object-contain"
+                      onError={(event) => {
+                        if (cert.issuer === 'Google Developers') {
+                          event.currentTarget.src = '/google_developers.svg';
+                        }
+                      }}
+                    />
                   ) : (
                     <Award size={20} className="text-gray-400" />
                   )}
