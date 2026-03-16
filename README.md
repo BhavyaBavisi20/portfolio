@@ -1,16 +1,130 @@
-# React + Vite
+# Bhavya Portfolio Monorepo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Full-stack personal portfolio built as a monorepo with:
+- `apps/web`: React + Vite frontend
+- `apps/api`: Express + MongoDB backend API
 
-Currently, two official plugins are available:
+The frontend renders portfolio content from API endpoints (projects, skills, blogs, achievements, certificates), includes a contact form, and ships with a grounded AI chat assistant (`Bhavya.AI`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## React Compiler
+### Frontend (`apps/web`)
+- React 19 + Vite 7
+- Tailwind CSS
+- Framer Motion animations
+- Axios for API calls
+- Three.js / React Three Fiber / Drei (interactive visuals)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Backend (`apps/api`)
+- Node.js + Express
+- MongoDB + Mongoose
+- Helmet + CORS
+- express-validator
+- express-rate-limit
+- Nodemailer (contact notifications)
+- LangChain + Hugging Face Inference (RAG assistant)
 
-## Expanding the ESLint configuration
+## Monorepo Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```text
+portfolio/
+|-- apps/
+|   |-- web/    # Vite frontend
+|   `-- api/    # Express backend
+|-- package.json
+`-- README.md
+```
+
+## Features
+
+- Dynamic portfolio sections from backend APIs
+- Projects and blog detail routes (`/api/projects/:id`, `/api/blogs/:id`)
+- Contact form with validation + rate limiting + email notification
+- RAG-powered portfolio chatbot with source grounding
+- Health check endpoint (`/api/health`)
+- Seed script to populate MongoDB from local portfolio data
+
+## API Routes
+
+Base URL: `http://localhost:5000`
+
+- `GET /api/health`
+- `GET /api/projects`
+- `GET /api/projects/:id`
+- `GET /api/skills`
+- `GET /api/blogs`
+- `GET /api/blogs/:id`
+- `GET /api/achievements`
+- `GET /api/certificates`
+- `POST /api/contact`
+- `POST /api/chat`
+
+## Environment Variables
+
+Create `apps/api/.env`:
+
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/portfolio
+CORS_ORIGIN=http://localhost:5173
+
+# Hugging Face (for /api/chat)
+HUGGINGFACE_API_KEY=hf_your_token_here
+HUGGINGFACE_PROVIDER=hf-inference
+HUGGINGFACE_CHAT_MODEL=katanemo/Arch-Router-1.5B
+HUGGINGFACE_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# Contact mail (required for /api/contact email sending)
+EMAIL_USER=your_gmail@gmail.com
+EMAIL_PASS=your_gmail_app_password
+EMAIL_TO=your_gmail@gmail.com
+```
+
+Create `apps/web/.env` (optional):
+
+```env
+VITE_API_BASE_URL=http://localhost:5000
+```
+
+## Local Development
+
+From repo root:
+
+```bash
+npm install
+```
+
+Run backend:
+
+```bash
+npm run dev:api
+```
+
+Run frontend:
+
+```bash
+npm run dev:web
+```
+
+Seed database:
+
+```bash
+npm run seed:api
+```
+
+## Production Notes (Render)
+
+- Backend uses `app.set("trust proxy", 1)` in production/Render for correct rate-limit IP detection.
+- Ensure all required environment variables are configured in Render.
+- Set frontend `VITE_API_BASE_URL` to deployed API URL.
+
+## Scripts
+
+Root scripts:
+- `npm run dev:web` - start frontend dev server
+- `npm run dev:api` - start backend dev server
+- `npm run seed:api` - seed MongoDB data
+
+App scripts:
+- `apps/web`: `dev`, `build`, `preview`, `lint`
+- `apps/api`: `dev`, `start`, `seed`

@@ -12,6 +12,11 @@ import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
+if (process.env.NODE_ENV === "production" || process.env.RENDER === "true") {
+  // Required behind Render's proxy so rate limiting can identify client IPs.
+  app.set("trust proxy", 1);
+}
+
 app.use(helmet());
 app.use(
   cors({
