@@ -1,26 +1,43 @@
 import nodemailer from "nodemailer";
 
 const sendEmail = async ({ subject, text }) => {
-  const { EMAIL_USER, EMAIL_PASS, EMAIL_TO } = process.env;
+  if (String(process.env.DISABLE_EMAIL_NOTIFICATIONS || "false").toLowerCase() === "true") {
+    return false;
+  }
 
-  if (!EMAIL_USER || !EMAIL_PASS || !EMAIL_TO) {
-    throw new Error("Email configuration is incomplete");
+  const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
+  const smtpPort = Number(process.env.SMTP_PORT || 587);
+  const smtpSecure = String(process.env.SMTP_SECURE || "false").toLowerCase() === "true";
+  const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  const mailFrom = process.env.MAIL_FROM || smtpUser;
+  const mailTo = process.env.MAIL_TO || process.env.EMAIL_TO;
+
+  if (!smtpUser || !smtpPass || !mailTo || !mailFrom) {
+    return false;
   }
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpSecure,
     auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASS
-    }
+      user: smtpUser,
+      pass: smtpPass
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000
   });
 
   await transporter.sendMail({
-    from: EMAIL_USER,
-    to: EMAIL_TO,
+    from: mailFrom,
+    to: mailTo,
     subject,
     text
   });
+
+  return true;
 };
 
 export default sendEmail;

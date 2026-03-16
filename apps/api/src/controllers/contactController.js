@@ -22,14 +22,21 @@ export const submitContact = async (req, res, next) => {
       message
     });
 
-    await sendEmail({
-      subject: `Portfolio Contact: ${normalizedSubject}`,
-      text: `Name: ${name}\nEmail: ${email}\nSubject: ${normalizedSubject}\n\nMessage:\n${message}`
-    });
+    let emailNotificationSent = false;
+    try {
+      emailNotificationSent = await sendEmail({
+        subject: `Portfolio Contact: ${normalizedSubject}`,
+        text: `Name: ${name}\nEmail: ${email}\nSubject: ${normalizedSubject}\n\nMessage:\n${message}`
+      });
+    } catch (mailError) {
+      emailNotificationSent = false;
+      console.error("Contact saved but email notification failed:", mailError.message);
+    }
 
     return res.status(200).json({
       message: "Contact message submitted successfully",
-      id: createdMessage._id
+      id: createdMessage._id,
+      emailNotificationSent
     });
   } catch (error) {
     return next(error);
