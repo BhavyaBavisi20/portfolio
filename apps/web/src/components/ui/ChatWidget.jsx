@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, X, Send, Bot, User, Link2 } from 'lucide-react';
-import { API_ROUTES } from '../../config/api';
+import { Terminal, X, Send, Bot, User, Link2, RotateCcw } from 'lucide-react';
+import { API_ROUTES, API_WS_URL } from '../../config/api';
 
 const SUGGESTIONS = [
   'What projects has Bhavya built?',
@@ -19,6 +19,8 @@ const INITIAL_MESSAGE = {
   intent: 'know_about_me_and_my_work',
   showContactForm: false,
 };
+
+const WS_RESPONSE_TIMEOUT_MS = 45000;
 
 const toApiHistory = (messages) =>
   messages
@@ -103,6 +105,7 @@ const ChatWidget = () => {
   const [messages, setMessages] = useState([INITIAL_MESSAGE]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [socketStatus, setSocketStatus] = useState('connecting');
   const [contactLead, setContactLead] = useState({
     email: '',
     anyIdea: '',
@@ -111,6 +114,10 @@ const ChatWidget = () => {
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [leadStatus, setLeadStatus] = useState({ type: '', message: '' });
   const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const pendingRequestsRef = useRef(new Map());
+  const manualCloseRef = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -119,6 +126,128 @@ const ChatWidget = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  const clearPendingRequests = useCallback((errorMessage) => {
+    pendingRequestsRef.current.forEach((entry) => {
+      clearTimeout(entry.timeoutId);
+      entry.reject(new Error(errorMessage));
+    });
+    pendingRequestsRef.current.clear();
+  }, []);
+
+  const connectSocket = useCallback(() => {
+    const activeSocket = socketRef.current;
+    if (
+      activeSocket &&
+      (activeSocket.readyState === WebSocket.OPEN || activeSocket.readyState === WebSocket.CONNECTING)
+    ) {
+      return;
+    }
+
+    setSocketStatus('connecting');
+    const socket = new WebSocket(API_WS_URL);
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      setSocketStatus('connected');
+    };
+
+    socket.onmessage = (event) => {
+      let parsed = null;
+      try {
+        parsed = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+
+      if (parsed?.type === 'chat.ready') {
+        return;
+      }
+
+      const requestId = String(parsed?.id || '');
+      if (!requestId) {
+        return;
+      }
+
+      const pending = pendingRequestsRef.current.get(requestId);
+      if (!pending) {
+        return;
+      }
+
+      clearTimeout(pending.timeoutId);
+      pendingRequestsRef.current.delete(requestId);
+
+      if (parsed.type === 'chat.answer') {
+        pending.resolve(parsed.payload || {});
+        return;
+      }
+
+      if (parsed.type === 'chat.error') {
+        pending.reject(new Error(parsed?.payload?.message || 'WebSocket request failed.'));
+      }
+    };
+
+    socket.onclose = () => {
+      socketRef.current = null;
+      setSocketStatus('disconnected');
+      clearPendingRequests('WebSocket connection closed.');
+
+      if (!manualCloseRef.current) {
+        reconnectTimeoutRef.current = setTimeout(() => {
+          connectSocket();
+        }, 1500);
+      }
+    };
+
+    socket.onerror = () => {
+      setSocketStatus('disconnected');
+    };
+  }, [clearPendingRequests]);
+
+  useEffect(() => {
+    manualCloseRef.current = false;
+    connectSocket();
+
+    return () => {
+      manualCloseRef.current = true;
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      clearPendingRequests('Chat widget closed.');
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
+    };
+  }, [clearPendingRequests, connectSocket]);
+
+  const sendChatOverWebSocket = useCallback((query, history) => {
+    const socket = socketRef.current;
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      return Promise.reject(new Error('WebSocket is not connected.'));
+    }
+
+    const requestId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        pendingRequestsRef.current.delete(requestId);
+        reject(new Error('Chat request timed out.'));
+      }, WS_RESPONSE_TIMEOUT_MS);
+
+      pendingRequestsRef.current.set(requestId, { resolve, reject, timeoutId });
+
+      socket.send(
+        JSON.stringify({
+          type: 'chat.ask',
+          id: requestId,
+          payload: {
+            message: query,
+            history,
+          },
+        })
+      );
+    });
+  }, []);
 
   const handleSend = async (text) => {
     const rawMessage = text || inputText;
@@ -133,19 +262,28 @@ const ChatWidget = () => {
     setIsTyping(true);
 
     try {
-      const response = await axios.post(API_ROUTES.chat, {
-        message: query,
-        history: toApiHistory(nextMessages),
-      });
+      const history = toApiHistory(nextMessages);
+      let data = null;
+
+      try {
+        data = await sendChatOverWebSocket(query, history);
+      } catch {
+        const response = await axios.post(API_ROUTES.chat, {
+          message: query,
+          history,
+        });
+        data = response?.data;
+        connectSocket();
+      }
 
       setMessages((prev) => [
         ...prev,
         {
           sender: 'bot',
-          text: response?.data?.answer || 'I could not generate a grounded answer just now.',
-          sources: Array.isArray(response?.data?.sources) ? response.data.sources : [],
-          intent: response?.data?.intent || 'know_about_me_and_my_work',
-          showContactForm: Boolean(response?.data?.showContactForm),
+          text: data?.answer || 'I could not generate a grounded answer just now.',
+          sources: Array.isArray(data?.sources) ? data.sources : [],
+          intent: data?.intent || 'know_about_me_and_my_work',
+          showContactForm: Boolean(data?.showContactForm),
         },
       ]);
     } catch (error) {
@@ -169,6 +307,18 @@ const ChatWidget = () => {
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const handleResetChat = () => {
+    setMessages([INITIAL_MESSAGE]);
+    setInputText('');
+    setIsTyping(false);
+    setLeadStatus({ type: '', message: '' });
+    setContactLead({
+      email: '',
+      anyIdea: '',
+      yourPortfolio: '',
+    });
   };
 
   const handleLeadChange = (event) => {
@@ -258,18 +408,31 @@ const ChatWidget = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Bhavya.AI</h3>
-                  <p className="text-[10px] text-green-400 font-mono flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                    Grounded RAG Assistant
+                  <p className="text-[10px] text-gray-300 font-mono flex items-center gap-1">
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        socketStatus === 'connected' ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'
+                      }`}
+                    ></span>
+                    {socketStatus === 'connected' ? 'WebSocket Live' : 'WebSocket Reconnecting'}
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={handleResetChat}
+                  className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-1.5 text-[10px] font-mono text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  Reset Chat
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4 text-sm scrollbar-hide">

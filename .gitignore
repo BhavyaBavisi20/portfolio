@@ -23,4 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
-apps/api/.env
+.env.*
+*.env
+*.env.*
+apps/*/.env
+apps/*/.env.*

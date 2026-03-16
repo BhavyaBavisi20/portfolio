@@ -74,10 +74,20 @@ HUGGINGFACE_PROVIDER=hf-inference
 HUGGINGFACE_CHAT_MODEL=katanemo/Arch-Router-1.5B
 HUGGINGFACE_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 
-# Contact mail (required for /api/contact email sending)
-EMAIL_USER=your_gmail@gmail.com
-EMAIL_PASS=your_gmail_app_password
-EMAIL_TO=your_gmail@gmail.com
+# Contact mail (recommended: Resend)
+DISABLE_EMAIL_NOTIFICATIONS=false
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM=onboarding@resend.dev
+RESEND_TO=you@example.com
+
+# SMTP fallback (optional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_gmail@gmail.com
+SMTP_PASS=your_gmail_app_password
+MAIL_FROM=your_gmail@gmail.com
+MAIL_TO=you@example.com
 ```
 
 Create `apps/web/.env` (optional):

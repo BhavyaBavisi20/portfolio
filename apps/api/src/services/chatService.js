@@ -623,6 +623,7 @@ User question:
 `);
 
 let knowledgeBasePromise = null;
+let lexicalKnowledgeBasePromise = null;
 let resolvedChatModelPromise = null;
 
 const fetchSupportedConversationalModels = async (provider) => {
@@ -709,6 +710,35 @@ const getKnowledgeBase = async () => {
   }
 
   return knowledgeBasePromise;
+};
+
+const getLexicalKnowledgeBase = async () => {
+  if (!lexicalKnowledgeBasePromise) {
+    lexicalKnowledgeBasePromise = (async () => {
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 420,
+        chunkOverlap: 60
+      });
+
+      const splitDocuments = await splitter.splitDocuments(buildKnowledgeDocuments());
+      const entries = splitDocuments.map((document) => ({
+        document,
+        tokens: new Set(
+          tokenize(
+            [
+              document.pageContent,
+              document.metadata?.title,
+              ...(document.metadata?.keywords || [])
+            ].join(" ")
+          )
+        )
+      }));
+
+      return { entries };
+    })();
+  }
+
+  return lexicalKnowledgeBasePromise;
 };
 
 const callChatModel = async (client, messages, options = {}) => {
@@ -894,6 +924,58 @@ const retrieveDocuments = async ({ embeddings, entries, question, searchQueries,
   return uniqueDocuments;
 };
 
+const retrieveDocumentsLexical = ({ entries, question, searchQueries, intent }) => {
+  const queries = Array.from(
+    new Set(buildRetrievalQueries({ question, searchQueries, intent }).filter(Boolean))
+  );
+  const queryTokensList = queries.map((query) => tokenize(query));
+
+  const scoredEntries = entries.map((entry) => {
+    let bestScore = 0;
+
+    queries.forEach((_query, queryIndex) => {
+      const lexical = lexicalScore(queryTokensList[queryIndex], entry.tokens);
+      const intentBoost =
+        intent === "connect_with_me" && entry.document.metadata?.sourceType === "contact"
+          ? 0.22
+          : intent === "connect_with_me" && entry.document.metadata?.sourceType === "career"
+            ? 0.08
+            : intent === "know_about_me_and_my_work" &&
+                ["project", "skills", "skill", "achievement", "linkedin", "career", "blog"].includes(
+                  entry.document.metadata?.sourceType
+                )
+              ? 0.04
+              : 0;
+
+      const score = lexical + intentBoost;
+      if (score > bestScore) {
+        bestScore = score;
+      }
+    });
+
+    return {
+      ...entry,
+      score: bestScore
+    };
+  });
+
+  const uniqueDocuments = [];
+  const seenKeys = new Set();
+
+  scoredEntries
+    .sort((left, right) => right.score - left.score)
+    .filter((entry) => entry.score > 0.08)
+    .forEach((entry) => {
+      const key = `${entry.document.metadata?.title || "unknown"}::${entry.document.pageContent.slice(0, 50)}`;
+      if (!seenKeys.has(key) && uniqueDocuments.length < MAX_CONTEXT_DOCUMENTS) {
+        seenKeys.add(key);
+        uniqueDocuments.push(entry.document);
+      }
+    });
+
+  return uniqueDocuments;
+};
+
 const buildGroundedFallbackAnswer = ({ question, documents, intent }) => {
   if (intent === "connect_with_me") {
     return [
@@ -960,6 +1042,22 @@ const isHuggingFaceModelAvailabilityError = (error) => {
   return String(message).toLowerCase().includes("have not been able to find inference provider information");
 };
 
+const isTransientNetworkError = (error) => {
+  const message = String(error?.message || "").toLowerCase();
+  const causeMessage = String(error?.cause?.message || "").toLowerCase();
+  const code = String(error?.code || error?.cause?.code || "").toUpperCase();
+
+  return (
+    code === "ETIMEDOUT" ||
+    code === "ECONNRESET" ||
+    code === "ECONNREFUSED" ||
+    code === "ENOTFOUND" ||
+    message.includes("fetch failed") ||
+    message.includes("timeout") ||
+    causeMessage.includes("timeout")
+  );
+};
+
 export const answerPortfolioQuestion = async ({ question, history = [] }) => {
   if (isLowSignalQuestion(question)) {
     return {
@@ -971,24 +1069,32 @@ export const answerPortfolioQuestion = async ({ question, history = [] }) => {
     };
   }
 
-  if (!process.env.HUGGINGFACE_API_KEY) {
-    return {
-      answer:
-        "The portfolio assistant is not fully configured yet. Add `HUGGINGFACE_API_KEY` on the API server to enable the RAG chatbot.",
-      sources: [],
-      intent: "know_about_me_and_my_work",
-      showContactForm: false
-    };
-  }
-
-  const { client, embeddings, entries } = await getKnowledgeBase();
-  const classification = await classifyIntent(client, question, history);
-
+  let client = null;
+  let classification = fallbackIntentClassification(question);
   let documents;
+
+  const withSources = (answer, intent, showContactForm = false) => ({
+    answer,
+    sources: (documents || []).map((document) => ({
+      title: document.metadata?.title || "Portfolio Source",
+      type: document.metadata?.sourceType || "context",
+      url: document.metadata?.url || ""
+    })),
+    intent,
+    showContactForm
+  });
+
   try {
+    if (!process.env.HUGGINGFACE_API_KEY) {
+      throw new Error("HUGGINGFACE_API_KEY is not configured.");
+    }
+
+    const knowledgeBase = await getKnowledgeBase();
+    client = knowledgeBase.client;
+    classification = await classifyIntent(client, question, history);
     documents = await retrieveDocuments({
-      embeddings,
-      entries,
+      embeddings: knowledgeBase.embeddings,
+      entries: knowledgeBase.entries,
       question,
       searchQueries: classification.searchQueries,
       intent: classification.intent
@@ -1002,7 +1108,21 @@ export const answerPortfolioQuestion = async ({ question, history = [] }) => {
         showContactForm: classification.intent === "connect_with_me"
       };
     }
-    throw error;
+
+    if (!isTransientNetworkError(error) && process.env.HUGGINGFACE_API_KEY) {
+      throw error;
+    }
+
+    console.warn("Falling back to lexical retrieval due to HF/network issue:", error.message);
+    const lexicalKnowledgeBase = await getLexicalKnowledgeBase();
+    classification = fallbackIntentClassification(question);
+    documents = retrieveDocumentsLexical({
+      entries: lexicalKnowledgeBase.entries,
+      question,
+      searchQueries: classification.searchQueries,
+      intent: classification.intent
+    });
+    client = null;
   }
 
   if (!documents || documents.length === 0) {
@@ -1015,20 +1135,27 @@ export const answerPortfolioQuestion = async ({ question, history = [] }) => {
   }
 
   if (classification.intent === "connect_with_me") {
-    return {
-      answer: buildGroundedFallbackAnswer({
+    return withSources(
+      buildGroundedFallbackAnswer({
         question,
         documents,
         intent: classification.intent
       }),
-      sources: documents.map((document) => ({
-        title: document.metadata?.title || "Portfolio Source",
-        type: document.metadata?.sourceType || "context",
-        url: document.metadata?.url || ""
-      })),
-      intent: classification.intent,
-      showContactForm: true
-    };
+      classification.intent,
+      true
+    );
+  }
+
+  if (!client) {
+    return withSources(
+      buildGroundedFallbackAnswer({
+        question,
+        documents,
+        intent: classification.intent
+      }),
+      classification.intent,
+      false
+    );
   }
 
   const prompt = await promptTemplate.format({
@@ -1060,32 +1187,18 @@ export const answerPortfolioQuestion = async ({ question, history = [] }) => {
     );
 
     const answer = completion?.choices?.[0]?.message?.content?.trim() || NO_ANSWER_RESPONSE;
-    return {
-      answer,
-      sources: documents.map((document) => ({
-        title: document.metadata?.title || "Portfolio Source",
-        type: document.metadata?.sourceType || "context",
-        url: document.metadata?.url || ""
-      })),
-      intent: classification.intent,
-      showContactForm: false
-    };
+    return withSources(answer, classification.intent, false);
   } catch (error) {
-    if (isHuggingFaceModelAvailabilityError(error)) {
-      return {
-        answer: buildGroundedFallbackAnswer({
+    if (isHuggingFaceModelAvailabilityError(error) || isTransientNetworkError(error)) {
+      return withSources(
+        buildGroundedFallbackAnswer({
           question,
           documents,
           intent: classification.intent
         }),
-        sources: documents.map((document) => ({
-          title: document.metadata?.title || "Portfolio Source",
-          type: document.metadata?.sourceType || "context",
-          url: document.metadata?.url || ""
-        })),
-        intent: classification.intent,
-        showContactForm: false
-      };
+        classification.intent,
+        false
+      );
     }
 
     if (isHuggingFacePermissionError(error)) {
