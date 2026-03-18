@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 const sendViaResend = async ({ subject, text }) => {
   const resendApiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM || process.env.MAIL_FROM;
-  const to = process.env.RESEND_TO || process.env.MAIL_TO || process.env.EMAIL_TO;
+  const to = process.env.RESEND_TO || process.env.MAIL_TO;
 
   if (!resendApiKey || !from || !to) {
     return false;
@@ -32,15 +32,21 @@ const sendViaResend = async ({ subject, text }) => {
 };
 
 const sendViaSmtp = async ({ subject, text }) => {
-  const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
+  const smtpHost = process.env.SMTP_HOST;
   const smtpPort = Number(process.env.SMTP_PORT || 587);
   const smtpSecure = String(process.env.SMTP_SECURE || "false").toLowerCase() === "true";
-  const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
-  const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
-  const mailFrom = process.env.MAIL_FROM || smtpUser;
-  const mailTo = process.env.MAIL_TO || process.env.EMAIL_TO;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  const mailFrom = process.env.MAIL_FROM;
+  const mailTo = process.env.MAIL_TO;
 
   if (!smtpUser || !smtpPass || !mailTo || !mailFrom) {
+    console.warn("SMTP disabled: missing one or more required vars (SMTP_USER, SMTP_PASS, MAIL_FROM, MAIL_TO).");
+    return false;
+  }
+
+  if (!smtpHost) {
+    console.warn("SMTP disabled: SMTP_HOST is not set.");
     return false;
   }
 
@@ -75,7 +81,7 @@ const sendEmail = async ({ subject, text }) => {
   const hasResendConfig =
     Boolean(process.env.RESEND_API_KEY) &&
     Boolean(process.env.RESEND_FROM || process.env.MAIL_FROM) &&
-    Boolean(process.env.RESEND_TO || process.env.MAIL_TO || process.env.EMAIL_TO);
+    Boolean(process.env.RESEND_TO || process.env.MAIL_TO);
 
   if (hasResendConfig) {
     return sendViaResend({ subject, text });
