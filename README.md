@@ -21,7 +21,7 @@ The frontend renders portfolio content from API endpoints (projects, skills, blo
 - Helmet + CORS
 - express-validator
 - express-rate-limit
-- Nodemailer (contact notifications)
+- Resend API (contact notifications)
 - LangChain + Hugging Face Inference (RAG assistant)
 
 ## Monorepo Structure
@@ -77,23 +77,8 @@ HUGGINGFACE_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 # Contact mail (recommended: Resend)
 DISABLE_EMAIL_NOTIFICATIONS=false
 RESEND_API_KEY=re_xxxxxxxxx
-RESEND_FROM=onboarding@resend.dev
+RESEND_FROM=Portfolio <noreply@your-verified-domain.com>
 RESEND_TO=you@example.com
-
-# Optional: Brevo transactional API
-BREVO_API_KEY=xkeysib-xxxxxxxxx
-BREVO_FROM=your_verified_sender@example.com
-BREVO_TO=you@example.com
-BREVO_SENDER_NAME=Portfolio Contact
-
-# SMTP fallback (often blocked on cloud hosts)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your_gmail@gmail.com
-SMTP_PASS=your_gmail_app_password
-MAIL_FROM=your_gmail@gmail.com
-MAIL_TO=you@example.com
 ```
 
 Create `apps/web/.env` (optional):
@@ -133,7 +118,7 @@ npm run seed:api
 - Backend uses `app.set("trust proxy", 1)` in production/Render for correct rate-limit IP detection.
 - Ensure all required environment variables are configured in Render.
 - Set frontend `VITE_API_BASE_URL` to deployed API URL.
-- Prefer API-based providers (`RESEND_API_KEY` or `BREVO_API_KEY`) because SMTP egress can fail on hosted platforms.
+- Resend requires `RESEND_FROM` to use a sender domain verified in Resend.
 
 ## Scripts
 
