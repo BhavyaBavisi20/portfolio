@@ -80,7 +80,13 @@ RESEND_API_KEY=re_xxxxxxxxx
 RESEND_FROM=onboarding@resend.dev
 RESEND_TO=you@example.com
 
-# SMTP fallback (optional)
+# Optional: Brevo transactional API
+BREVO_API_KEY=xkeysib-xxxxxxxxx
+BREVO_FROM=your_verified_sender@example.com
+BREVO_TO=you@example.com
+BREVO_SENDER_NAME=Portfolio Contact
+
+# SMTP fallback (often blocked on cloud hosts)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
@@ -127,6 +133,7 @@ npm run seed:api
 - Backend uses `app.set("trust proxy", 1)` in production/Render for correct rate-limit IP detection.
 - Ensure all required environment variables are configured in Render.
 - Set frontend `VITE_API_BASE_URL` to deployed API URL.
+- Prefer API-based providers (`RESEND_API_KEY` or `BREVO_API_KEY`) because SMTP egress can fail on hosted platforms.
 
 ## Scripts
 
