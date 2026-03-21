@@ -93,46 +93,48 @@ const sendEmail = async ({ subject, text }) => {
     return false;
   }
 
-  const from =
-    process.env.MAIL_FROM ||
-    process.env.EMAIL_USER ||
-    process.env.RESEND_FROM ||
-    process.env.BREVO_FROM;
-  const to = asRecipientList(
-    process.env.MAIL_TO || process.env.EMAIL_TO || process.env.RESEND_TO || process.env.BREVO_TO
-  );
   const attempts = [];
   const failures = [];
+  const defaultTo = process.env.MAIL_TO || process.env.EMAIL_TO;
 
-  if (!from || to.length === 0) {
-    console.warn("Email disabled: set MAIL_FROM and MAIL_TO (comma separated supported).");
-    return false;
-  }
-
-  if (process.env.RESEND_API_KEY) {
+  const resendFrom = process.env.RESEND_FROM;
+  const resendTo = asRecipientList(process.env.RESEND_TO || defaultTo);
+  if (process.env.RESEND_API_KEY && resendFrom && resendTo.length > 0) {
     attempts.push({
       provider: "resend",
-      execute: () => sendViaResend({ subject, text, from, to })
+      execute: () => sendViaResend({ subject, text, from: resendFrom, to: resendTo })
     });
+  } else if (process.env.RESEND_API_KEY) {
+    console.warn("Resend skipped: set RESEND_FROM and RESEND_TO (or MAIL_TO).");
   }
 
-  if (process.env.BREVO_API_KEY) {
+  const brevoFrom = process.env.BREVO_FROM;
+  const brevoTo = asRecipientList(process.env.BREVO_TO || defaultTo);
+  if (process.env.BREVO_API_KEY && brevoFrom && brevoTo.length > 0) {
     attempts.push({
       provider: "brevo",
-      execute: () => sendViaBrevo({ subject, text, from, to })
+      execute: () => sendViaBrevo({ subject, text, from: brevoFrom, to: brevoTo })
     });
+  } else if (process.env.BREVO_API_KEY) {
+    console.warn("Brevo skipped: set BREVO_FROM and BREVO_TO (or MAIL_TO).");
   }
 
+  const smtpFrom = process.env.MAIL_FROM || process.env.EMAIL_USER;
+  const smtpTo = asRecipientList(defaultTo);
   const hasSmtpConfig =
     Boolean(process.env.SMTP_HOST) &&
     Boolean(process.env.SMTP_USER) &&
-    Boolean(process.env.SMTP_PASS);
+    Boolean(process.env.SMTP_PASS) &&
+    Boolean(smtpFrom) &&
+    smtpTo.length > 0;
 
   if (hasSmtpConfig) {
     attempts.push({
       provider: "smtp",
-      execute: () => sendViaSmtp({ subject, text, from, to })
+      execute: () => sendViaSmtp({ subject, text, from: smtpFrom, to: smtpTo })
     });
+  } else if (process.env.SMTP_HOST || process.env.SMTP_USER || process.env.SMTP_PASS) {
+    console.warn("SMTP skipped: set SMTP_HOST/SMTP_USER/SMTP_PASS plus MAIL_FROM and MAIL_TO.");
   }
 
   if (attempts.length === 0) {
